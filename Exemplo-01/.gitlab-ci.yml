@@ -1,0 +1,51 @@
+# workflow:
+#   rules:
+#     - if: $CI_COMMIT_BRANCH != "main"
+#       when: never
+#     - when: always
+
+image: node:19.1
+
+stages:
+  - teste
+  - build
+  - deploy
+
+executar_teste: 
+  stage: teste
+  before_script:
+    - echo "Preparando testes..."
+    - chmod +x ./script.sh
+  script:
+    - ./script.sh
+  after_script:
+    - echo "Apagando arquivos temporários..."
+
+executar_teste2:
+  image: node:19.0
+  stage: teste
+  script:
+    - echo "Executando teste 2"
+
+criar_imagens:
+  # only:
+  #   - main
+  stage: build
+  script:
+    - echo "Criando as imagens..."
+
+push_imagens:
+  # only:
+  #   - main
+  needs:
+    - criar_imagens
+  stage: build
+  script:
+    - echo "Realizando upload das imagens..."
+
+kubernetes:
+  # only:
+  #   - main
+  stage: deploy
+  script:
+    - echo "Executando deploy"
