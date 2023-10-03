@@ -5,3 +5,17 @@ stages:
 
 criar_imagens:
   stage: build
+  tags:
+    - gpc
+  script:
+    - docker build -t laissonbruno/gcp-runner:1.0 app/.
+    - docker push laissonbruno/gcp-runner:1.0
+
+executar_imagens:
+  stage: deploy
+  needs:
+    - criar_imagens
+  tags:
+    - gpc
+  script:
+    - docker run -dti --name webserver -p 80:80 laissonbruno/gcp-runner:1.0
